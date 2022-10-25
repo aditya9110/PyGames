@@ -77,6 +77,35 @@ def character(t):
     ]
     return stages[t]
 
+
+def leaderboard(name, score):
+    names, scores = [], []
+    names.append(name)
+    scores.append(score)
+    with open('names_hangman.txt', 'a') as f:
+        for i in names:
+            f.write('{}\n'.format(i))
+    with open('scores_hangman.txt', 'a') as f:
+        for i in scores:
+            f.write('{}\n'.format(i))
+
+    with open('names_hangman.txt', 'r') as f:
+        names = f.read().splitlines()
+    with open('scores_hangman.txt', 'r') as f:
+        scores = f.read().splitlines()
+
+    n = len(scores)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if scores[j] < scores[j + 1]:
+                scores[j], scores[j + 1] = scores[j + 1], scores[j]
+                names[j], names[j + 1] = names[j + 1], names[j]
+
+    print('----------LEADERBOARD----------')
+    for i in range(n):
+        print('{}. {}\t\t{}'.format(i + 1, names[i], scores[i]))
+
+
 print('WELCOME TO HANGMAN')
 name = input('Enter your name: ')
 score = 0
@@ -137,3 +166,14 @@ while flag != -1:
             print(character(tries))
             print(word)
             score -= 5
+
+    if flag == 0 and '_' in word:
+        flag = -1
+        print('You lose the game')
+        print('Original Word: ' + o_word)
+        print('Score : {}'.format(score))
+        leaderboard(name, score)
+        y_n = input('Play Again(y/n): ')
+        if y_n == 'y':
+            flag = 0
+            score = 0
